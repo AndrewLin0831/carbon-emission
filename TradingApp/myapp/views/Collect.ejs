@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<script
+src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script> 
+<script src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-all/ethereumjs-all-2018-1-17.min.js"></script>
+<style>
+  .welcome-page{
+    height: 90%;
+  }
+  .welcome-space{
+    height: 20%;
+  }
+  .collect-container{
+    display: flex;
+    justify-content: center;
+  }
+  .collect-space{
+    width: 5%;
+  }
+</style>
+<html>
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body>
+    <% include menu.ejs %>
+    <div class="welcome-page">
+      <div class="welcome-space"></div>
+      <div class="collect-container">
+      <div class="collect-space"></div>
+      <div class="carbon-collect">
+        <h2><strong>自動化碳權交易收集</strong></h2>
+        <p>帳號(公鑰):<input type="text" id="public" placeholder="Your Public Key"></p>
+        <p>密碼(私鑰):<input type="text" id="private" placeholder="Your Private Key"/></p>
+        <p>選擇交易方式:
+          <select id="choose">
+            <!-- <option value="1">申請NFT</option> -->
+            <option value="2">更新NFT資訊</option>
+          </select>
+        </p>
+        <p>成功或失敗交易:
+          <select id="S_or_F">
+            <option value="1">成功</option>
+           <option value="2">失敗</option>
+          </select>
+        </p>
+        <p>交易次數:<input type="text" id="tx_amount" placeholder="Amount"/></p>
+        <button id="start" class="btn btn-outline-primary" onclick="start()">開始收集</button>
+        <p id="result"></p>
+      </div>
+      <div class="collect-space"></div>
+      <div class="address-collect">
+        <h2><strong>自動化地址交易收集</strong></h2>
+        <h7 style="font-size: 10px;"><strong>**</strong>注意: 方法一優先於方法二，不使用方法一請勿填入<strong>**</strong></h7>
+        <p>(方法一)輸入地址: <input type="text" id="address" placeholder="Address"/></p>
+        <p>(方法二)匯入文字檔: <input type="file" id="fileInput"></p>
+        <pre id="fileContents"></pre>
+        <button id="start_search" class="btn btn-outline-primary" onclick="goSearch()">查詢交易資料</button>
+        <p id="result_search"></p>
+      </div>
+      <div class="collect-space"></div>
+      <div class="time-collect">
+        <h2><strong>自動化交易時間收集(威翔)</strong></h2>
+        <p>帳號(公鑰):<input type="text" id="public_time" placeholder="Your Public Key"></p>
+        <p>密碼(私鑰):<input type="text" id="private_time" placeholder="Your Private Key"/></p>
+        <p>選擇交易方式:
+          <select id="choose_time">
+            <!-- <option value="1">申請NFT</option> -->
+            <option value="2">更新NFT資訊</option>
+          </select>
+        </p>
+        <p>成功或失敗交易:
+          <select id="S_or_F_time">
+            <option value="1">成功</option>
+          </select>
+        </p>
+        <p>交易次數:<input type="text" id="tx_amount_time" placeholder="Amount"/></p>
+        <p>迴圈次數:<input type="text" id="loop_time" placeholder="Amount"/></p>
+        <button id="start_time" class="btn btn-outline-primary" onclick="start_time()">開始收集</button>
+        <p id="result_time"></p>
+      </div>
+      <div class="collect-space"></div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+  const web3 = new Web3('https://long-cool-cherry.matic-testnet.discover.quiknode.pro/7df014dde8c338ff7cb16a4968b6c3eea21b9556/');
+  const eth_web3 = new Web3("https://eth.getblock.io/94cc53b0-ae83-40aa-ae57-73d024dce3be/mainnet/");
+  async function getContract(type){
+    var Return ='';
+    switch(type){
+      case "1":
+      case "2":
+        await $.ajax({
+              type: "POST",
+              url: "/Contract/NFT",
+              data: {
+              },               
+              success: function (data) {
+                catch_result(data);
+              },
+              error: function (err) {
+              }            
+          });
+        return Return;
+      case "3":
+        await $.ajax({
+              type: "POST",
+              url: "/Contract/Token",
+              data: {
+              },               
+              success: function (data) {
+                catch_result(data);
+              },
+              error: function (err) {
+              }            
+          });
+        return Return;
+      case "4":
+        await $.ajax({
+              type: "POST",
+              url: "/Contract/Retire",
+              data: {
+              },               
+              success: function (data) {
+                catch_result(data);
+              },
+              error: function (err) {
+              }            
+          });
+        return Return;
+    }
+    function catch_result(result){
+        Return = result;
+      }
+  }
+
+  async function start(){
+    //testnet
+    var testnet ='';
+    await $.ajax({
+              type: "POST",
+              url: "/testnet",
+              data: {
+              },               
+              success: function (data) {
+                catch_result(data);
+              },
+              error: function (err) {
+              }            
+          });
+    function catch_result(result){
+      testnet = result;
+      }
+    //公鑰
+    var publicKey = document.getElementById("public").value; 
+    //私鑰
+    var privateKey = document.getElementById("private").value;
+    //使用方法
+    var choose = document.getElementById("choose").value;
+    //交易次數
+    var tx_amount = document.getElementById("tx_amount").value;
+    //取得合約
+    var newContract = await getContract(choose);
+    //將私鑰的每個字碼改成16進制
+    var SignKey =new ethereumjs.Buffer.Buffer(privateKey, 'hex');
+    //利用web3找nonce
+    const nonce = await web3.eth.getTransactionCount(publicKey);
+    //使用合約
+    var contract = new web3.eth.Contract(newContract[0].abi, newContract[1]);
+    //建立交易模板
+    var rawtx = {
+      chainId: 80001,
+      nonce: nonce,//代表此地址的已交易數量
+      gasPrice: web3.utils.toHex(web3.utils.toWei('2', 'gwei')),
+      gasLimit: web3.utils.toHex(50000),
+      to: newContract[1],//合約
+      data: contract.methods.updateCarbonNftWithData('25','','100').encodeABI(),//要使用的方法
+    };
+    //依照使用法更改交易
+    var change_rawtx = getNewTx(contract,publicKey,choose,rawtx);
+    document.getElementById('start').disabled=true;
+    for(var i=0;i<parseInt(tx_amount);i++){
+      var step_record = document.getElementById("result")
+      step_record.innerHTML = '收集中，目前已完成'+i+"筆...";
+      try{
+        //重新取得nonce
+        var new_nonce = await web3.eth.getTransactionCount(publicKey);
+        change_rawtx.nonce = new_nonce;
+        const tx = new ethereumjs.Tx(change_rawtx, {testnet});
+        tx.sign(SignKey);
+        const serializedTx = tx.serialize();
+        //傳送交易
+        await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
+                .on('receipt', async function(receipt){
+                  var eleLink = document.createElement('a');
+                  eleLink.download = receipt.transactionHash+'.json';
+                  eleLink.style.display = 'none';
+                  //find block timestamp
+                  await web3.eth.getBlock(receipt.blockNumber).then((value) => {
+                    receipt["timestamp"] = value.timestamp;
+                    //find nonce,gas,input
+                    web3.eth.getTransaction(receipt.transactionHash).then((value) => {
+                      receipt["nonce"] = value.nonce;
+                      receipt["gas"] = value.gas;
+                      receipt["gasPrice"] = value.gasPrice;
+                      receipt["input"] = value.input;
+                      receipt["value"] = value.value;
+                      var tx = JSON.stringify(receipt);
+                      var blob = new Blob([tx],{ type:"text/json"});
+                      eleLink.href = URL.createObjectURL(blob);
+                      document.body.appendChild(eleLink);
+                      eleLink.click();
+                      document.body.removeChild(eleLink);
+                    });
+                  });
+              })
+              .on('error',async function(error, receipt) {
+                try {
+                  var eleLink = document.createElement('a');
+                  eleLink.download = receipt.transactionHash+'.json';
+                  eleLink.style.display = 'none';
+                  //find block timestamp
+                  await web3.eth.getBlock(receipt.blockNumber).then((value) => {
+                    receipt["timestamp"] = value.timestamp;
+                    //find nonce,gas,input
+                    web3.eth.getTransaction(receipt.transactionHash).then((value) => {
+                      receipt["nonce"] = value.nonce;
+                      receipt["gas"] = value.gas;
+                      receipt["gasPrice"] = value.gasPrice;
+                      receipt["input"] = value.input;
+                      receipt["value"] = value.value;
+                      var tx = JSON.stringify(receipt);
+                      var blob = new Blob([tx],{ type:"text/json"});
+                      eleLink.href = URL.createObjectURL(blob);
+                      document.body.appendChild(eleLink);
+                      eleLink.click();
+                      document.body.removeChild(eleLink);
+                    });
+                  });
+                } catch (innerError) {
+                console.error('Inner error handling:', innerError);
+                }
+              });
+      }
+      catch(error){
+        console.error('Loop iteration error:', error);
+        console.log("----------------------");
+      }
+
+    }
+    step_record.innerHTML = "完成收集!";
+    document.getElementById('start').disabled=false;
+  }
+  function getNewTx(contract,publicKey,choose,rawtx){
+    var S_or_F = document.getElementById("S_or_F").value;
+    switch(choose){
+      //update nft
+      case "1":
+        rawtx.data = contract.methods.mintEmptyNft(publicKey).encodeABI();
+        return rawtx;
+        break;
+      //update nft
+      case "2":
+        if(S_or_F=="1"){
+          return rawtx;
+        }
+        else if(S_or_F=="2"){
+          rawtx.data = contract.methods.updateCarbonNftWithData('22','','60').encodeABI();
+          return rawtx;
+        }
+        break;
+    }
+  }
+  //查資料
+  async function search(search_aim){
+    try{
+      await $.ajax({
+              type: "GET",
+              url: `https://api.etherscan.io/api?module=account&action=txlist&address=${search_aim}&startblock=4000000&endblock=5000000&sort=asc&apikey=5Z5VZCY5J55G83YJD36KQ2EP7JS1SV4YD4`,
+              data: {
+              },               
+              success: function (data) {
+                catch_result(data);
+              },
+              error: function (err) {
+              }            
+          });
+          function catch_result(data){
+            var eleLink = document.createElement('a');
+            eleLink.download = search_aim +'.json';
+            eleLink.style.display = 'none';
+            var tx = JSON.stringify(data);
+            var blob = new Blob([tx],{ type:"text/json"});
+            eleLink.href = URL.createObjectURL(blob);
+            document.body.appendChild(eleLink);
+            eleLink.click();
+            document.body.removeChild(eleLink);
+          }
+    }
+    catch(error){
+      console.error(error);
+    }
+  }
+  function goSearch(){
+    var step_record_search = document.getElementById("result_search");
+    step_record_search.innerHTML = "收集中...";
+    document.getElementById('start_search').disabled=true;
+    const search_aim = document.getElementById("address").value;
+    if(search_aim==""){
+          const fileInput = document.getElementById('fileInput');
+          const fileContentsDisplay = document.getElementById('fileContents');
+
+            const selectedFile = fileInput.files[0];
+            if (selectedFile) {
+                const reader = new FileReader();
+
+                reader.onload =async function(event) {
+                    const fileContents = event.target.result;
+                    const lines = fileContents.split('\n');
+                    await delaySearch(lines,0);
+                    document.getElementById('start_search').disabled=false;
+                    step_record_search.innerHTML = "收集完成";
+                };
+
+                reader.readAsText(selectedFile);
+            } else {
+                document.getElementById('start_search').disabled=false;
+                fileContentsDisplay.textContent = '未選擇文件';
+            }
+    }
+    else{
+      search(search_aim);
+      document.getElementById('start_search').disabled=false;
+      step_record_search.innerHTML = "收集完成";
+    }
+  }
+  async function delaySearch(accounts,i){
+    if (i<accounts.length) {
+      await  setTimeout(function () { search(accounts[i]); delaySearch(accounts,i+1)}, 200);
+    }
+  }
+
+  //時間
+  
+  async function start_time(){
+    //testnet
+    var testnet ='';
+    await $.ajax({
+              type: "POST",
+              url: "/testnet",
+              data: {
+              },               
+              success: function (data) {
+                catch_result(data);
+              },
+              error: function (err) {
+              }            
+          });
+    function catch_result(result){
+      testnet = result;
+      }
+    //公鑰
+    var publicKey = document.getElementById("public_time").value; 
+    //私鑰
+    var privateKey = document.getElementById("private_time").value;
+    //使用方法
+    var choose = document.getElementById("choose_time").value;
+    //交易次數
+    var tx_amount = document.getElementById("tx_amount_time").value;
+    //取得合約
+    var newContract = await getContract(choose);
+    //將私鑰的每個字碼改成16進制
+    var SignKey =new ethereumjs.Buffer.Buffer(privateKey, 'hex');
+    //利用web3找nonce
+    const nonce = await web3.eth.getTransactionCount(publicKey);
+    //使用合約
+    var contract = new web3.eth.Contract(newContract[0].abi, newContract[1]);
+    //建立交易模板
+    var rawtx = {
+      chainId: 80001,
+      nonce: nonce,//代表此地址的已交易數量
+      gasPrice: web3.utils.toHex(web3.utils.toWei('0.1', 'gwei')),
+      gasLimit: web3.utils.toHex(50000),
+      to: newContract[1],//合約
+      data: contract.methods.updateCarbonNftWithData('25','','100').encodeABI(),//要使用的方法
+    };
+    var loop_time = document.getElementById("loop_time").value;
+    //依照使用法更改交易
+    var change_rawtx = getNewTx_time(contract,publicKey,choose,rawtx);
+    document.getElementById('start_time').disabled=true;
+    var step_record = document.getElementById("result_time");
+    step_record.innerHTML = "開始時間:" + new Date();
+    const promises = [];
+    //重新取得nonce
+    var new_nonce = await web3.eth.getTransactionCount(publicKey);
+    for(var i=0;i<parseInt(tx_amount);i++){
+      try{
+        change_rawtx.nonce = new_nonce;
+        const tx = new ethereumjs.Tx(change_rawtx, {testnet});
+        tx.sign(SignKey);
+        const serializedTx = tx.serialize();
+        //傳送交易
+        if(i==parseInt(tx_amount)-1){
+          step_record.innerHTML += "<br>最後一筆送出時間:"+new Date();
+          await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
+                .on('receipt', async function(receipt){
+                  //find block timestamp
+                  await web3.eth.getBlock(receipt.blockNumber).then((value) => {
+                    step_record.innerHTML+='\n';
+                    step_record.innerHTML += "<br>最後完成時間:"+new Date(value.timestamp*1000);
+                  });
+              })
+              .on('error',async function(error, receipt) {
+                /*try {
+                  //find block timestamp
+                  await web3.eth.getBlock(receipt.blockNumber).then((value) => {
+                    step_record.innerHTML = "最後完成時間"+value.timestamp;
+                  });
+                } catch (innerError) {
+                console.error('Inner error handling:', innerError);
+                }*/
+              });
+        }
+        else{
+          web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'));
+        }
+      }
+      catch(error){
+        console.error('Loop iteration error:', error);
+        console.log("----------------------");
+      }
+      new_nonce=new_nonce+1;
+    }
+    document.getElementById('start_time').disabled=false;
+  }
+
+  function getNewTx_time(contract,publicKey,choose,rawtx){
+    var S_or_F = document.getElementById("S_or_F_time").value;
+    switch(choose){
+      //update nft
+      case "1":
+        rawtx.data = contract.methods.mintEmptyNft(publicKey).encodeABI();
+        return rawtx;
+        break;
+      //update nft
+      case "2":
+        if(S_or_F=="1"){
+          return rawtx;
+        }
+        else if(S_or_F=="2"){
+          rawtx.data = contract.methods.updateCarbonNftWithData('22','','60').encodeABI();
+          return rawtx;
+        }
+        break;
+    }
+  }
+</script>

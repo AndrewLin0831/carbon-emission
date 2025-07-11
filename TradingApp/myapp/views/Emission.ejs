@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html>
+    <script
+    src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+    crossorigin="anonymous"></script>
+    
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .body { display: flex; justify-content: center; margin-bottom: 20px; margin-top: 10px;height:auto;background-color: rgb(255, 247, 237);}
+        .left_body {background-color: white; flex-basis: 20%}
+        .right_body { flex-basis: 80%;}
+        table { width: 100%; border-collapse: collapse; justify-content: center;}
+        th, td { border: 1px solid #ddd; padding: 8px; font-size:12px;}
+        th { background-color: #f2f2f2; }
+        .table-container {
+            overflow-x: auto; /* 啟用水平滾動條 */
+            height: 150px;
+            overflow-y: scroll;
+            border: 3px solid #252323; /* 添加邊框，可視需要修改 */
+            width: 900px;
+            justify-content: center;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <% include menu.ejs %>
+    </div>
+    <div class="body">
+        <!-- <div class="left_body"> -->
+            <div class="dropdown">
+                <button class="btn btn-outline-danger dropdown-toggle" type="button" id="EmissionFactor" data-bs-toggle="dropdown" aria-expanded="false">
+                  Emission Option
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="EmissionFactor">
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="changePage('Parameter,Create','Source,Data,DataInquiry,On-site,Market');">
+                      Create Emission Parameter
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="changePage('Source,Create','Parameter,Data,DataInquiry,On-site,Market');">
+                      Create Emission Source
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="changePage('Data,Create','Parameter,Source,DataInquiry,On-site,Market');">
+                      Create Emission Data
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="changePage('DataInquiry','Create,On-site,Market');">
+                      Emission Information Inquiry
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="changePage('On-site','Create,DataInquiry,Market');">
+                      Add On-site Check Emission
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="changePage('Market','Create,DataInquiry,On-site');">
+                      Certificate transfer to Market
+                    </a>
+                  </li>
+                </ul>
+            </div>
+        <!-- </div>  -->
+        <div class="right_body" style="margin-right: 10px;margin-left: 10px;">
+            <div id="Create">
+                <div id="Parameter">
+                    <h2 style="text-align: center;">Create New Emission Parameter</h2>
+                    <div class="row g-2">
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="MaterialType" class="form-control" id="MaterialType_Parameter" placeholder="name@example.com">
+                            <label for="MaterialType_Parameter">Material Type</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="EmissionType" class="form-control" id="EmissionType_Parameter" placeholder="Password">
+                            <label for="EmissionType_Parameter">Emission Type</label>
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="EmissionFactor" class="form-control" id="EmissionFactor_Parameter" placeholder="Password">
+                            <label for="EmissionFactor_Parameter">Emission Factor</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="ParameterUncertainty" class="form-control" id="ParameterUncertainty_Parameter" placeholder="Password">
+                            <label for="ParameterUncertainty_Parameter">Parameter Uncertainty</label>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="Resource_Parameter">Options</label>
+                        <select class="form-select" id="Resource_Parameter">
+                        <option selected disabled>Choose Resource...</option>
+                        <option value="IPCC">IPCC</option>
+                        <option value="Government">Government</option>
+                        <option value="Customize">Customize</option>
+                        </select>
+                    </div>
+                    <div class="text-center">
+                        <button id="createParameter" class="btn btn-primary" type="button" onclick="CreateParameter();">Create</button>
+                    </div>
+                </div>
+                <div id="Source" style="display: none;">
+                    <h2 style="text-align: center;">Create New Emission Source</h2>
+                    <div class="row g-2">
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="CompanyID_Source" class="form-control" id="CompanyID_Source" placeholder="name@example.com">
+                            <label for="CompanyID_Source">Company ID</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="SourceID_Source" class="form-control" id="SourceID_Source" placeholder="name@example.com">
+                            <label for="SourceID_Source">Source ID</label>
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="ParameterID_Source" class="form-control" id="ParameterID_Source" placeholder="name@example.com">
+                            <label for="ParameterID_Source">Parameter ID</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="ActivityUncertainty_Source" class="form-control" id="ActivityUncertainty_Source" placeholder="name@example.com">
+                            <label for="ActivityUncertainty_Source">Activity Uncertainty Value</label>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="MonitorType_Source">Options</label>
+                        <select class="form-select" id="MonitorType_Source">
+                        <option selected disabled>Choose Monitor Type...</option>
+                        <option value="Continuous">Continuous</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Estimation">Estimation</option>
+                        </select>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button id="createSource" class="btn btn-primary" type="button" onclick="CreateSource();">Create</button>
+                    </div>
+                </div>
+                <div id="Data" style="display: none;">
+                    <h2 style="text-align: center;">Create New Emission Data</h2>
+                    <div class="row g-2">
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="CompanyID_Data" class="form-control" id="CompanyID_Data" placeholder="name@example.com">
+                            <label for="CompanyID_Data">Company ID</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="SourceID_Data" class="form-control" id="SourceID_Data" placeholder="name@example.com">
+                            <label for="SourceID_Data">Source ID</label>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="MaterialType_Data" class="form-control" id="MaterialType_Data" placeholder="name@example.com">
+                            <label for="MaterialType_Data">Material Type</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="EmissionType_Data" class="form-control" id="EmissionType_Data" placeholder="Password">
+                            <label for="EmissionType_Data">Emission Type</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="EmissionFactor_Data" class="form-control" id="EmissionFactor_Data" placeholder="Password">
+                            <label for="EmissionFactor_Data">Emission Factor</label>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="ActivityData_Data" class="form-control" id="ActivityData_Data" placeholder="Password">
+                            <label for="ActivityData_Data">Activity Amount</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="EmissionValue_Data" class="form-control" id="EmissionValue_Data" placeholder="Password">
+                            <label for="EmissionValue_Data">Emission Value</label>
+                        </div>
+                        <div class="form-floating mb-3 col-sm">
+                            <input type="TimeTag_Data" class="form-control" id="TimeTag_Data" placeholder="name@example.com">
+                            <label for="TimeTag_Data">TimeTag</label>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button id="createData" class="btn btn-primary" type="button" onclick="CreateData();">Create</button>
+                    </div>
+                </div>
+            </div>
+            <div id="DataInquiry" style="display: none;">
+                    <h2 style="text-align: center;">Emission Infomation Search Tool</h2>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="DataInquiryCategory">Options</label>
+                        <select class="form-select" id="DataInquiryCategory">
+                        <option selected disabled>Choose Inquiry Category...</option>
+                        <option disabled>--Emission Parameter--</option>
+                        <option value="/Read/Parameter">Search Parameter By Material & Emission Type</option>
+                        <option disabled>--Emission Source--</option>
+                        <option value="/Read/Source">Search Source By Company ID</option>
+                        <option value="/Read/ReadSourceByDate">Search Emission Source By Date</option>
+                        <option disabled>--Emission Data--</option>
+                        <option value="/Read/ReadEmissionByCompanyID">Search Emission Data By Company ID</option>
+                        <option value="/Read/ReadEmissionBySource">Search Emission Data By Source ID</option>
+                        <option value="/Read/ReadSingleEmission">Search Single Emission Data</option>
+                        <option value="/getSpotList">Get recommended On-site Check List</option>
+                        </select>
+                    </div>
+
+                    <div class="row g-7">
+                        <div id="CompanyID-Inquiry" class="form-floating mb-3 col-sm" style="display: none;">
+                            <input type="CompanyID" class="form-control" id="CompanyID_Inquiry" placeholder="name@example.com">
+                            <label for="CompanyID_Inquiry">Company ID</label>
+                        </div>
+                        <div id="SourceID-Inquiry" class="form-floating mb-3 col-sm" style="display: none;">
+                            <input type="SourceID" class="form-control" id="SourceID_Inquiry" placeholder="name@example.com">
+                            <label for="SourceID_Inquiry">Source ID</label>
+                        </div>
+                        <div id="MaterialType-Inquiry" class="form-floating mb-3 col-sm" style="display: none;">
+                            <input type="MaterialType" class="form-control" id="MaterialType_Inquiry" placeholder="name@example.com">
+                            <label for="MaterialType_Inquiry">Material Type</label>
+                        </div>
+                        <div id="EmissionType-Inquiry" class="form-floating mb-3 col-sm" style="display: none;">
+                            <input type="EmissionType" class="form-control" id="EmissionType_Inquiry" placeholder="Password">
+                            <label for="EmissionType_Inquiry">Emission Type</label>
+                        </div>
+                        <div id="ParameterID-Inquiry" class="form-floating mb-3 col-sm" style="display: none;">
+                            <input type="ParameterID" class="form-control" id="ParameterID_Inquiry" placeholder="Password">
+                            <label for="ParameterID_Inquiry">Parameter ID</label>
+                        </div>
+                        <div id="TimeTag-Inquiry" class="form-floating mb-3 col-sm" style="display: none;">
+                            <input type="TimeTag" class="form-control" id="TimeTag_Inquiry" placeholder="Password">
+                            <label for="TimeTag_Inquiry">TimeTag</label>
+                        </div>
+                        <div id="StartDate-Inquiry" class="form-floating mb-3 col-sm" style="display: none;">
+                            <input type="date" class="form-control" id="StartDate_Inquiry" name="StartDate_Inquiry">
+                            <label for="StartDate_Inquiry">Start Date</label>
+                        </div>
+                        <div id="EndDate-Inquiry" class="form-floating mb-3 col-sm" style="display: none;">
+                            <input type="date" class="form-control" id="EndDate_Inquiry" name="EndDate_Inquiry">
+                            <label for="EndDate_Inquiry">End Date</label>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button id="search" class="btn btn-primary" type="button" onclick="Search();">Search</button>
+                    </div>
+                    <div style="display: flex;justify-content: center;">
+                        <div id="ResultTableContainer" style="margin-top: 5px;display: none;" class="table-container"></div>
+                    </div>
+            </div>
+            <div id="On-site" style="display: none;">
+                <h2 style="text-align: center;">Add On-site Check Emission (Verifier Only)</h2>
+                <div class="row g-4">
+                    <div id="CompanyID-Inquiry" class="form-floating mb-3 col-sm">
+                        <input type="CompanyID" class="form-control" id="CompanyID_On-site" placeholder="name@example.com">
+                        <label for="CompanyID_On-site">Company ID</label>
+                    </div>
+                    <div id="StartDate-On-site" class="form-floating mb-3 col-sm">
+                        <input type="date" class="form-control" id="StartDate_On-site" name="EndDate_Inquiry">
+                        <label for="StartDate_On-site">Start Date</label>
+                    </div>
+                    <div id="EndDate-On-site" class="form-floating mb-3 col-sm">
+                        <input type="date" class="form-control" id="EndDate_On-site" name="EndDate_Inquiry">
+                        <label for="EndDate_On-site">End Date</label>
+                    </div>
+                    <div id="SourceID-Inquiry" class="form-floating mb-3 col-sm">
+                        <button id="getSpotList" class="btn btn-primary" type="button" onclick="getSpotList();">Get On-site List</button>
+                    </div>
+                </div>
+                <div class="row g-1">
+                    <div id="SpotList" class="form-floating mb-3 col-sm"></div>
+                </div>
+                <div id="btn-add" style="display: none;">
+                    <div class="text-center">
+                        <button id="add" class="btn btn-primary" type="button" onclick="Add();">Add Data</button>
+                    </div>
+                </div>
+            </div>
+            <div id="Market" style="display: none;">
+                <h2 style="text-align: center;">Certificate transfer to Market</h2>
+                <div class="row g-1">
+                    <div id="TokenID-Transfer" class="form-floating mb-3 col-sm">
+                        <input type="TokenID" class="form-control" id="TokenID_Transfer" placeholder="name@example.com">
+                        <label for="TokenID_Transfer">Token ID</label>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button id="Transfer" class="btn btn-primary" type="button" onclick="Transfer();">Transfer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels "></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
+     
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script> 
+  </body>
+</html>
+<script>
+  var web3 ='';
+if (window.ethereum) {
+  web3 = new Web3(window.ethereum);
+  window.ethereum.enable(); // get permission to access accounts
+  } 
+</script>
+<script>
+    let Inquiry;
+    $('#DataInquiryCategory').change(function() {
+      Inquiry = $(this).val();
+      switch(Inquiry){
+        case "/Read/Parameter":
+            changePage("MaterialType-Inquiry,EmissionType-Inquiry","CompanyID-Inquiry,SourceID-Inquiry,ParameterID-Inquiry,TimeTag-Inquiry,StartDate-Inquiry,EndDate-Inquiry");
+            break;
+        case "/Read/Source":
+            changePage("CompanyID-Inquiry","MaterialType-Inquiry,EmissionType-Inquiry,SourceID-Inquiry,ParameterID-Inquiry,TimeTag-Inquiry,StartDate-Inquiry,EndDate-Inquiry");
+            break;  
+        case "/Read/ReadEmissionByCompanyID":
+            changePage("CompanyID-Inquiry","MaterialType-Inquiry,EmissionType-Inquiry,SourceID-Inquiry,ParameterID-Inquiry,TimeTag-Inquiry,StartDate-Inquiry,EndDate-Inquiry");
+            break;
+        case "/Read/ReadEmissionBySource":
+            changePage("CompanyID-Inquiry,SourceID-Inquiry","MaterialType-Inquiry,EmissionType-Inquiry,ParameterID-Inquiry,TimeTag-Inquiry,StartDate-Inquiry,EndDate-Inquiry");
+            break;
+        case "/Read/ReadSourceByDate":
+            changePage("CompanyID-Inquiry,SourceID-Inquiry,ParameterID-Inquiry,StartDate-Inquiry,EndDate-Inquiry","MaterialType-Inquiry,EmissionType-Inquiry,TimeTag-Inquiry");
+            break;
+        case "/Read/ReadSingleEmission":
+            changePage("CompanyID-Inquiry,SourceID-Inquiry,MaterialType-Inquiry,EmissionType-Inquiry,TimeTag-Inquiry","ParameterID-Inquiry,StartDate-Inquiry,EndDate-Inquiry");
+            break;
+        case "/getSpotList":
+            changePage("CompanyID-Inquiry,StartDate-Inquiry,EndDate-Inquiry","ParameterID-Inquiry,SourceID-Inquiry,MaterialType-Inquiry,EmissionType-Inquiry,TimeTag-Inquiry");
+            break;
+        default:
+            break;
+      }
+    });
+    function changePage(open, close) {
+        console.log(open);
+        const openAim = open.split(",");
+        const closeAim = close.split(",");
+        for (let i = 0; i < openAim.length; i++) {
+            $("#" + openAim[i]).show();
+        }
+        for (let i = 0; i < closeAim.length; i++) {
+            $("#" + closeAim[i]).hide();
+        }
+    }
+    function CreateParameter(){
+        document.getElementById("createParameter").disabled=true;
+        const MaterialType = document.getElementById("MaterialType_Parameter").value;
+        const EmissionType = document.getElementById("EmissionType_Parameter").value;
+        const EmissionFactor = document.getElementById("EmissionFactor_Parameter").value;
+        const ParameterUncertainty = document.getElementById("ParameterUncertainty_Parameter").value;
+        const Resource = $('#Resource_Parameter').val();
+        $.ajax({
+              url: 'http://140.116.234.100:1314/emission/Create/Parameter',
+              type: 'POST',
+              data: {
+                MaterialType: MaterialType,
+                EmissionType: EmissionType,
+                EmissionFactor: EmissionFactor,
+                ParameterUncertainty: ParameterUncertainty,
+                Resource: Resource
+                }, 
+              success: function(response) {
+                  alert(response.toString());
+                  document.getElementById("createParameter").disabled=false;
+              },
+              error: function(err) {
+                  alert(err.toString());
+                  document.getElementById("createParameter").disabled=false;
+              }
+          });
+    }
+    function CreateSource(){ 
+        document.getElementById("createSource").disabled=true;
+        const CompanyID = document.getElementById("CompanyID_Source").value;
+        const SourceID = document.getElementById("SourceID_Source").value;
+        const ParameterID = document.getElementById("ParameterID_Source").value;
+        const ActivityUncertainty = document.getElementById("ActivityUncertainty_Source").value;
+        const MonitorType = $('#MonitorType_Source').val();
+        $.ajax({
+              url: 'http://140.116.234.100:1314/emission/Create/Source',
+              type: 'POST',
+              data: {
+                CompanyID: CompanyID,
+                SourceID: SourceID,
+                ParameterID: ParameterID,
+                ActivityUncertainty: ActivityUncertainty,
+                MonitorType: MonitorType
+                }, 
+              success: function(response) {
+                  alert(response);
+                  document.getElementById("createSource").disabled=false;
+              },
+              error: function(err) {
+                  alert(err);
+              }
+          });
+    }
+    function CreateData(){ 
+        document.getElementById("createData").disabled=true;
+        const CompanyID = document.getElementById("CompanyID_Data").value;
+        const SourceID = document.getElementById("SourceID_Data").value;
+        const MaterialType = document.getElementById("MaterialType_Data").value;
+        const EmissionType = document.getElementById("EmissionType_Data").value;
+        const EmissionFactor = document.getElementById("EmissionFactor_Data").value;
+        const ActivityData = document.getElementById("ActivityData_Data").value;
+        const EmissionValue = document.getElementById("EmissionValue_Data").value;
+        const TimeTag = document.getElementById("TimeTag_Data").value;
+        $.ajax({
+              url: 'http://140.116.234.100:1314/emission/Create/Emission',
+              type: 'POST',
+              data: {
+                CompanyID: CompanyID,
+                SourceID: SourceID,
+                MaterialType: MaterialType,
+                EmissionType: EmissionType,
+                EmissionFactor: EmissionFactor,
+                ActivityData: ActivityData,
+                EmissionValue: EmissionValue,
+                TimeTag: TimeTag
+                }, 
+              success: function(response) {
+                  alert(response);
+                  document.getElementById("createData").disabled=false;
+              },
+              error: function(err) {
+                  alert(JSON.stringify(err));
+                  document.getElementById("createData").disabled=false;
+              }
+          });
+    }
+    function Search(){ 
+        document.getElementById("search").disabled=true;
+        let Category = $('#DataInquiryCategory').val();
+        let CompanyID;
+        let SourceID;
+        let MaterialType;
+        let EmissionType;
+        let ParameterID;
+        let TimeTag;
+        let StartDate;
+        let EndDate;   
+        let data;
+        switch(Category){
+        case "/Read/Parameter":
+            MaterialType = document.getElementById("MaterialType_Inquiry").value;
+            EmissionType = document.getElementById("EmissionType_Inquiry").value;
+            data ='?MaterialType='+ MaterialType+'&EmissionType='+ EmissionType;
+            break;
+        case "/Read/Source":
+            CompanyID = document.getElementById("CompanyID_Inquiry").value;
+            data ='?CompanyID='+ CompanyID;
+            break;  
+        case "/Read/ReadEmissionByCompanyID":
+            CompanyID = document.getElementById("CompanyID_Inquiry").value;
+            data ='?CompanyID='+ CompanyID;
+            break;
+        case "/Read/ReadEmissionBySource":
+            CompanyID = document.getElementById("CompanyID_Inquiry").value;
+            SourceID = document.getElementById("SourceID_Inquiry").value;
+            data ='?CompanyID='+ CompanyID+'&SourceID='+SourceID;
+            break;
+        case "/Read/ReadSourceByDate":
+            CompanyID = document.getElementById("CompanyID_Inquiry").value;
+            SourceID = document.getElementById("SourceID_Inquiry").value;
+            ParameterID = document.getElementById("ParameterID_Inquiry").value;
+            StartDate = document.getElementById("StartDate_Inquiry").value;
+            EndDate = document.getElementById("EndDate_Inquiry").value; 
+            data ='?CompanyID='+ CompanyID+'&SourceID='+SourceID+'&ParameterID='+ParameterID+'&StartDate='+StartDate+'&EndDate='+EndDate;
+            break;
+        case "/Read/ReadSingleEmission":
+            CompanyID = document.getElementById("CompanyID_Inquiry").value;
+            SourceID = document.getElementById("SourceID_Inquiry").value;
+            MaterialType = document.getElementById("MaterialType_Inquiry").value;
+            EmissionType = document.getElementById("EmissionType_Inquiry").value;
+            TimeTag = document.getElementById("TimeTag_Inquiry").value;
+            data ='?CompanyID='+ CompanyID+'&SourceID='+SourceID+'&MaterialType='+MaterialType+'&EmissionType='+EmissionType+'&TimeTag='+TimeTag;
+            break;
+        case "/getSpotList":
+            CompanyID = document.getElementById("CompanyID_Inquiry").value;
+            StartDate = document.getElementById("StartDate_Inquiry").value;
+            EndDate = document.getElementById("EndDate_Inquiry").value; 
+            data ='?CompanyID='+ CompanyID+'&StartDate='+StartDate+'&EndDate='+EndDate;
+            break;
+        default:
+            alert('Please Choose Option');
+            document.getElementById("search").disabled=false;
+            return 0;
+        }
+        console.log(Category);
+        $.ajax({
+              url: 'http://140.116.234.100:1314/emission'+Category+data,
+              type: 'GET',
+              success: function(response) {
+                    //alert(response);
+                    document.getElementById("search").disabled=false;
+                    response = JSON.parse(response);
+                    console.log(response[0].Company);
+                    document.getElementById('ResultTableContainer').innerHTML='';
+                    const table = document.createElement('table');
+                    const thead = document.createElement('thead');
+                    const tbody = document.createElement('tbody');
+                    table.appendChild(thead);
+                    table.appendChild(tbody);
+                    // Adding some basic styling to the table (optional)
+                    /*table.style.width = '100%';
+                    table.style.borderCollapse = 'collapse';*/
+
+                    // Create header row
+                    const headerRow = document.createElement('tr');
+                    if (response.length > 1) {
+                        Object.keys(response[0]).forEach(key => {
+                            const th = document.createElement('th');
+                            th.textContent = key;
+                            th.style.border = '1px solid black';
+                            th.style.padding = '8px';
+                            th.style.backgroundColor = '#f2f2f2';
+                            headerRow.appendChild(th);
+                        });
+                        thead.appendChild(headerRow);
+                        response.forEach(item => {
+                        const tr = document.createElement('tr');
+                        Object.values(item).forEach(value => {
+                            const td = document.createElement('td');
+                            td.textContent = value;
+                            td.style.border = '1px solid black';
+                            td.style.padding = '8px';
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                        });
+                    }
+                    else{
+                        Object.keys(response[0]).forEach(key => {
+                            const th = document.createElement('th');
+                            th.textContent = key;
+                            th.style.border = '1px solid black';
+                            th.style.padding = '8px';
+                            th.style.backgroundColor = '#f2f2f2';
+                            headerRow.appendChild(th);
+                        });
+                        thead.appendChild(headerRow);
+                        const tr = document.createElement('tr');
+                        Object.values(response[0]).forEach(value => {
+                            const td = document.createElement('td');
+                            td.textContent = value;
+                            td.style.border = '1px solid black';
+                            td.style.padding = '8px';
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                    }
+
+                    // Append the table to the container
+                    document.getElementById('ResultTableContainer').appendChild(table);
+                    $("#ResultTableContainer").show();
+                },
+                error: function(err) {
+                    alert(err);
+                }
+          });
+    } 
+    let SpotList=[];
+    function getSpotList(){
+        document.getElementById("getSpotList").disabled=false;
+        const CompanyID = document.getElementById("CompanyID_On-site").value;
+        const StartDate = document.getElementById("StartDate_On-site").value;
+        const EndDate = document.getElementById("EndDate_On-site").value; 
+        console.log(StartDate);
+        SpotList =[];
+        $.ajax({
+              url: 'http://140.116.234.100:1314/emission/getSpotList?CompanyID='+CompanyID+'&StartDate='+StartDate+'&EndDate='+EndDate,
+              type: 'GET',
+              success: function(response) {
+                response = JSON.parse(response);
+                document.getElementById("SpotList").innerHTML='';
+                response.forEach(item => {
+                    document.getElementById("SpotList").innerHTML += `
+                    <div class="row g-3">
+                    <div id="SourceID-`+item.Source+`" class="form-floating mb-3 col-sm">
+                        <input type="SourceID" class="form-control" id="SourceID_`+item.Source+`" placeholder="name@example.com" value="`+item.Source+`" disabled>
+                        <label for="SourceID_`+item.Source+`">Source ID</label>
+                    </div>
+                    <div id="ParameterID" class="form-floating mb-3 col-sm">
+                        <input type="`+item.ParameterID+`" class="form-control" id="`+item.ParameterID+`" placeholder="name@example.com" value="`+item.ParameterID+`" disabled>
+                        <label for="`+item.ParameterID+`">Parameter ID</label>
+                    </div>
+                    <div id="Value" class="form-floating mb-3 col-sm">
+                        <input type="Value" class="form-control" id=`+item.Source+item.ParameterID+`>
+                        <label>On-site Emission Value</label>
+                    </div>
+                </div>`;
+                    SpotList.push(item);
+                    });
+                $("#btn-add").show();
+                document.getElementById("getSpotList").disabled=false;
+            },
+                error: function(err) {
+                    alert(err);
+                }
+          });
+    }
+    function Add(){
+        let OnSiteData=[];
+        document.getElementById("add").disabled=true;
+        const CompanyID = document.getElementById("CompanyID_On-site").value;
+        const StartDate = document.getElementById("StartDate_On-site").value;
+        const EndDate = document.getElementById("EndDate_On-site").value; 
+        SpotList.forEach(item => {
+           let EmissionValue = document.getElementById(item.Source+item.ParameterID).value;
+           OnSiteData.push({
+                Source: item.Source,
+                ParameterID: item.ParameterID,
+                EmissionValue: EmissionValue
+            });
+        });
+        console.log(OnSiteData);
+        $.ajax({
+              url: 'http://140.116.234.100:1314/emission/Verifier/AddOnsiteEmission',
+              type: 'POST',
+              data: {
+                CompanyID: CompanyID,
+                StartDate: StartDate,
+                EndDate: EndDate,
+                OnSiteData: JSON.stringify(OnSiteData)
+              },
+              success: function(response) {
+                console.log(response);
+                response = JSON.parse(response);
+                document.getElementById("add").disabled=false;
+
+            },
+                error: function(err) {
+                    alert(err);
+                }
+          });
+    }
+    function Transfer(){
+        document.getElementById("Transfer").disabled=true;
+        const TokenID = document.getElementById("TokenID_Transfer").value;
+        $.ajax({
+              url: 'http://140.116.234.100:1314/emission/User/TokenTransferToMarket',
+              type: 'POST',
+              data: {
+                TokenID: TokenID,
+              },
+              success: function(response) {
+                console.log(response);
+                alert(response);
+                document.getElementById("Transfer").disabled=false;
+                
+            },
+                error: function(err) {
+                    alert(err);
+                }
+          });
+    }
+</script>
+

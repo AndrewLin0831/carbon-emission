@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<script
+src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels "></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>  
+<style>
+  .accordion-button:hover{
+    background-color: rgba(151, 215, 109, 0.334);
+  }
+</style>
+<html>
+  <head>
+    <script src='/javascripts/Retire.js'></script>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <% include menu.ejs %>
+    <div style="height: 10px;"></div>
+      <div class="retire-page">
+        <div class="accordion" id="accordionExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" id="NFTRetired_page_button" type="button" data-bs-toggle="collapse" data-bs-target="#NFTRetired_page" aria-expanded="true" aria-controls="collapseOne">
+                碳權NFT抵消碳排
+              </button>
+            </h2>
+            <div id="NFTRetired_page" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="NFTRetired">
+                  <p>NFT ID:<input type="text" id="NFTRetired_tokenId" placeholder="e.g. 10"/></p>
+                  <button id="button_NFTRetired" class="btn btn-outline-primary" onclick="RetireApp.NFTRetired()">進行抵消</button>
+                  <p id="NFTRetired_status"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" id="TokenRetired_page_button" type="button" data-bs-toggle="collapse" data-bs-target="#TokenRetired_page" aria-expanded="true" aria-controls="collapseOne">
+                碳權幣抵消碳排
+              </button>
+            </h2>
+            <div id="TokenRetired_page" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="TokenRetired">
+                  <p>Token Amount:<input type="text" id="TokenRetired_Amount" placeholder="e.g. 100"/></p>
+                  <button id="button_TokenRetired" class="btn btn-outline-primary" onclick="RetireApp.TokenRetired()">進行抵消</button>
+                  <p id="TokenRetired_status"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        window.addEventListener('load', function() {
+          var currentURL = window.location.href;
+          switch(currentURL){
+            case 'http://140.116.234.100:1314/retire':
+              break;
+            case 'http://140.116.234.100:1314/retire/enroll':
+              $("#enroll_page_button").removeClass("collapsed");
+              $("#enroll_page").addClass("show");
+              break;
+            case 'http://140.116.234.100:1314/retire/nft':
+              $("#NFTRetired_page_button").removeClass("collapsed");
+              $("#NFTRetired_page").addClass("show");
+              //$("#NFTretire_page_button").click();
+              break;
+            case 'http://140.116.234.100:1314/retire/token':
+              $("#TokenRetired_page_button").removeClass("collapsed");
+              $("#TokenRetired_page").addClass("show");
+              //$("#Tokenretire_page_button").click();
+              break;
+          }
+        });
+      </script>
+        <script>
+          async function loading(){
+            await $.ajax({
+                  type: "GET",
+                  url: "/userInfo/getYourCompanyRetirementInfo",
+                  data: {
+                  },               
+                  success: function (data) {
+                      catch_result(data);
+                  },
+                  error: function (err) {
+                  }            
+              });
+            function catch_result(data){
+              if(String(data)=="noWallet"){
+                document.getElementById("Company_Id").innerHTML='disconnect';
+                document.getElementById("Company_Name").innerHTML='disconnect';
+                document.getElementById("Company_Retired").innerHTML='disconnect';
+              }
+              else{
+              document.getElementById("Company_Id").innerHTML=data[0];
+              document.getElementById("Company_Name").innerHTML=data[1];
+              document.getElementById("Company_Retired").innerHTML=data[2];
+              }
+            }
+          }
+          window.onload=loading();
+        </script>
+        <script>
+          window.onload=reloading();
+          function reloading(){
+            WalletApp.Connect();
+            reloading_walletInfo();
+          }
+        </script>
+  </body>
+</html>

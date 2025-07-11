@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<script
+src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels "></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+<style>
+  .accordion-button:hover{
+    background-color: rgba(151, 215, 109, 0.334);
+  }
+</style>
+<html>
+  <head>
+    <script src='/javascripts/Transfer.js'></script>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <% include menu.ejs %>
+    <div class="transfer-page">
+      <div class="accordion" id="accordionExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" id="fraction_page_button" type="button" data-bs-toggle="collapse" data-bs-target="#fraction_page" aria-expanded="true" aria-controls="collapseOne">
+                碳權NFT轉換成碳權幣
+              </button>
+            </h2>
+            <div id="fraction_page" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="fraction">
+                  <p>NFT ID:<input type="text" id="fraction_id" placeholder="e.g. 10"/></p>
+                  <button id="button_fraction" class="btn btn-outline-primary"  onclick="TansferApp.fraction();">執行轉換</button>
+                  <p id="fraction_status"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" id="NFTTransfer_page_button" type="button" data-bs-toggle="collapse" data-bs-target="#NFTTransfer_page" aria-expanded="true" aria-controls="collapseOne">
+                碳權NFT轉移
+              </button>
+            </h2>
+            <div id="NFTTransfer_page" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="NFTTransfer">
+                  <p>TokenId ID:<input type="text" id="NFTTransfer_tokenId" placeholder="e.g. 10"/></p>
+                  <p>Transfer Address:<input type="text" id="NFTTransfer_address" placeholder="e.g. 0xEfEA16dBC0D65b822fd80ed0D31496DC0f14Fd53"/></p>
+                  <button id="button_NFTTransfer" class="btn btn-outline-primary"  onclick="TansferApp.NFTTransfer()">確認轉移碳權NFT</button>
+                  <p id="NFTTransfer_status"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" id="TokenTransfer_page_button"  type="button" data-bs-toggle="collapse" data-bs-target="#TokenTransfer_page" aria-expanded="false" aria-controls="collapseThree" onclick="RegistryApp.NFTInfoList();">
+                  碳權幣轉移
+              </button>
+            </h2>
+            <div id="TokenTransfer_page" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="TokenTransfer">
+                  <p>TokenId Amount:<input type="text" id="TokenTransfer_tokenAmount" placeholder="e.g. 100"/></p>
+                  <p>Transfer Address:<input type="text" id="TokenTransfer_address" placeholder="e.g. 0xEfEA16dBC0D65b822fd80ed0D31496DC0f14Fd53"/></p>
+                  <button id="button_TokenTransfer" class="btn btn-outline-primary"  onclick="TansferApp.TokenTransfer()">確認轉移碳權幣</button>
+                  <p id="TokenTransfer_status"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <script>
+      window.addEventListener('load', function() {
+        var currentURL = window.location.href;
+        switch(currentURL){
+          case 'http://140.116.234.100:1314/transfer':
+            break;
+          case 'http://140.116.234.100:1314/transfer/fraction':
+            $("#fraction_page_button").removeClass("collapsed");
+            $("#fraction_page").addClass("show");
+            break;
+          case 'http://140.116.234.100:1314/transfer/nft':
+            $("#NFTTransfer_page_button").removeClass("collapsed");
+            $("#NFTTransfer_page").addClass("show");
+            //$("#NFTTransfer_page_button").click();
+            break;
+          case 'http://140.116.234.100:1314/transfer/token':
+            $("#TokenTransfer_page_button").removeClass("collapsed");
+            $("#TokenTransfer_page").addClass("show");
+            //$("#TokenTransfer_page_button").click();
+            break;
+        }
+      });
+    </script>
+    <script>
+      window.onload=reloading();
+      function reloading(){
+        WalletApp.Connect();
+        reloading_walletInfo();
+      }
+    </script>
+  </body>
+</html>

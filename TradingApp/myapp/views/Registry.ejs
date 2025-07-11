@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<script
+src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels "></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script> 
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed;}
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; width: 100%;}
+        th { background-color: #f2f2f2; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <% include menu.ejs %>
+    </div>
+    <div class="body">
+      <h2 style="text-align: center;">Register Account</h2>
+        <div class="row g-1">
+          <div class="form-floating mb-3 col-sm">
+            <input type="CompanyName" class="form-control" id="CompanyName_Registry" placeholder="name@example.com">
+            <label for="CompanyName_Registry">Company Name</label>
+          </div>
+        </div>
+        <div class="row g-1">
+          <div class="form-floating mb-3 col-sm">
+            <input type="CompanyID" class="form-control" id="CompanyID_Registry" placeholder="Password">
+            <label for="CompanyID">Company ID</label>
+          </div>
+        </div>
+        <div class="d-grid gap-2">
+          <button id="createAccount" class="btn btn-primary" type="button" onclick="CreateAccount();">CreateAccount</button>
+        </div>
+    </div>
+  </body>
+</html>
+<script>
+  var web3 ='';
+if (window.ethereum) {
+  web3 = new Web3(window.ethereum);
+  window.ethereum.enable(); // get permission to access accounts
+  } 
+</script>
+<script>
+  async function CreateAccount(){
+    document.getElementById("createAccount").disabled=true;
+    const CompanyName = document.getElementById("CompanyName_Registry").value;
+    const CompanyID = document.getElementById("CompanyID_Registry").value;
+    console.log(CompanyID)
+    $.ajax({
+              url: 'http://140.116.234.100:1314/emission/User/BindCompany',
+              type: 'POST',
+              data: {
+                CompanyID: CompanyID  
+                }, 
+              success: function(response) {
+                  alert(response);
+              },
+              error: function(err) {
+                  alert(err);
+                  document.getElementById("createAccount").disabled=false;
+              }
+    });
+    $.ajax({
+              url: 'http://140.116.234.100:1314/trading/Contracts?Contract=iMRCNFTContract',
+              type: 'GET',
+              success: function(response) {
+                  console.log(response);
+                  catch_result(response[0],response[1],CompanyName,CompanyID);
+              },
+              error: function(err) {
+                  alert(err);
+                  document.getElementById("createAccount").disabled=false;
+              }
+    });
+
+  }
+  async function catch_result(contractAddress,contractJson,CompanyName,CompanyID){
+    if (window.ethereum) {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });;
+                var account = accounts[0]; 
+                const contract = new web3.eth.Contract(contractJson.abi,contractAddress);
+                await contract.methods.setCompanyEnrollment(account,CompanyID,CompanyName).send({ from: account });
+                document.getElementById('createAccount').disabled=false;
+                alert('Binding Complete');
+                }
+            else {
+                alert('you need install metamask');
+                document.getElementById('createAccount').disabled=false;
+            }
+  }
+</script>

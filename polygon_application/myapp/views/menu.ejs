@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<script
+src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-piechart-outlabels "></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+<style>
+  body{
+    font-family: "Arial","標楷體", sans-serif;
+    height: 100vh;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgb(255, 246, 246);
+    margin: 0;
+  }
+  .global-page{
+    display: flex;
+    justify-content: space-between;
+    height: 10%;
+  }
+  .left-container{
+    display: flex;
+    justify-content: center;
+  }
+  .right-container{
+    display: flex;
+    justify-content: center;
+  }
+  .btn{
+  --bs-border-width: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  .wallet-button{
+    --bs-border-width: 2px;
+    box-shadow: 0 2px 4px #000000;
+  }
+  .menu{
+    display: flex;
+    justify-content: left;
+  }
+  .menu-space{
+    width: 10px;
+  }
+  .registry-submenu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+  }
+  .registry:hover + .registry-submenu,.registry-submenu:hover {
+    display: block;
+  }
+  .transfer-submenu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+  }
+  .transfer:hover + .transfer-submenu,.transfer-submenu:hover  {
+    display: block;
+  }
+  .retire-submenu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+  }
+  .retire:hover + .retire-submenu,.retire-submenu:hover {
+    display: block;
+  }
+  .trace-submenu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+  }
+  .trace:hover + .trace-submenu,.trace-submenu:hover {
+    display: block;
+  }
+  .submenucolor{
+    background-color: rgb(253, 251, 236);
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  .CompanyInfo-item{
+    width: 25%;
+  }
+  .menu-color{
+    color: black;
+  }
+  .buttonchangecolor{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .buttonchangecolor:hover{
+    background-color: azure;
+  }
+</style>
+<html>
+  <head>
+    <script src='/javascripts/Wallet.js'></script>
+    <title><%= title %></title>
+  </head>
+  <body>
+    <div data-role="global-page" class="global-page">
+      <div class="left-container">
+        <div class="icon" style="display: flex; align-items: center;">
+          <a href="/">
+            <img src="/images/imrc.jpg" style="height: 40px; width: 50px;"/>
+          </a>
+        </div>
+        <div class="menu-space"></div>
+        <div data-role="page" class="page-container" style="display: flex; align-items: center;">
+          <div class="menu">
+            <div data-role="menu-item" class="registry" >
+              <a href="/registry/user" class="text-decoration-none menu-color">
+                <span class="registry-name">
+                  註冊碳權NFT
+                </span>
+              </a>
+              <div class="registry-submenu submenucolor">
+                <div class="buttonchangecolor">
+                <a href="/registry/enroll" id="enroll" class="text-decoration-none menu-color" onclick="setPage('enroll');">註冊廠務資訊</a>
+                </div>
+                <div class="buttonchangecolor">
+                <a href="/registry/nft" id="nft" class="text-decoration-none menu-color" onclick="setPage('nft');">申請碳權NFT</a>
+                </div>
+              </div>
+            </div>
+            <div class="menu-space"></div>
+            <div data-role="menu-item" class="transfer">
+              <a href="/transfer" class="text-decoration-none menu-color">
+                <span class="transfer-name">
+                  碳權轉移
+                </span>
+              </a>
+              <div class="transfer-submenu submenucolor">
+                <div class="buttonchangecolor">
+                  <a  href="/transfer/fraction" class="text-decoration-none menu-color">碳權NFT轉換成碳權幣</a>
+                </div>
+                <div class="buttonchangecolor">
+                  <a  href="/transfer/nft" class="text-decoration-none menu-color">碳權NFT轉移</a>
+                </div>
+                <div class="buttonchangecolor">
+                  <a  href="/transfer/token" class="text-decoration-none menu-color">碳權幣轉移</a>
+                </div>
+              </div>
+            </div>
+            <div class="menu-space"></div>
+            <div data-role="menu-item" class="retire">
+              <a href="/retire" class="text-decoration-none menu-color">
+                <span class="retire-name">
+                  碳權抵消碳排
+                </span>
+              </a>
+              <div class="retire-submenu submenucolor">
+                <div class="buttonchangecolor">
+                  <a  href="/retire/nft" class="text-decoration-none menu-color">碳權NFT抵消碳排</a>
+                </div>
+                <div class="buttonchangecolor">
+                  <a  href="/retire/token" class="text-decoration-none menu-color">碳權幣抵消碳排</a>
+                </div>
+              </div>
+            </div>
+            <div class="menu-space"></div>
+            <div data-role="menu-item" class="trace">
+              <a href="/trace" class="text-decoration-none menu-color">
+                <span class="trace-name">
+                  碳權追蹤
+                </span>
+              </a>
+              <div class="trace-submenu submenucolor">
+                <div class="buttonchangecolor">
+                  <a  href="/trace/companyId" class="text-decoration-none menu-color">Company ID 搜尋</a>
+                </div>
+                <div class="buttonchangecolor">
+                  <a  href="/trace/nft" class="text-decoration-none menu-color">碳權NFT搜尋</a>
+                </div>
+              </div>
+            </div>
+            <div class="menu-space"></div>
+            <div data-role="menu-item" class="trace">
+              <a href="/registry/admin" class="text-decoration-none menu-color">
+                <span class="trace-name">
+                  管理者專區
+                </span>
+              </a>
+            </div>
+<!--            
+            <div class="menu-space"></div>
+            <div data-role="menu-item" class="company">
+              <a href="/company" class="text-decoration-none menu-color">
+                <span class="company-name">
+                  註冊廠務資訊
+                </span>
+              </a>
+              <div class="company-submenu submenucolor">
+                <div class="buttonchangecolor">
+                  <a  href="/company/nft" class="text-decoration-none menu-color">碳權NFT</a>
+                </div>
+                <div class="buttonchangecolor">
+                  <a  href="/company/token" class="text-decoration-none menu-color">抵消碳權</a>
+                </div>
+              </div>
+            </div> 
+-->
+          </div>
+        </div>
+      </div>
+      <div class="right-container">
+        <div class="membership-container" style="display: flex; align-items: center;">
+          <div>
+            <div>
+              <span style="font-size: 14px;">碳權鑄造會員證 : <strong id="NFTMembership">Loading...</strong></span>
+            </div>
+            <div>
+              <span style="font-size: 14px;">碳權抵消會員證 : <strong id="RetirementMembership">Loading...</strong></span>
+            </div>
+          </div>
+        </div>
+        <div class="menu-space"></div>
+        <div class="balance-container" style="display: flex; align-items: center;">
+          <div>
+            <div>
+              <span style="font-size: 14px;">碳權幣數量 : <strong id="CarbonTokenBalanceOf">Loading...</strong>(GiM-CT)</span>
+            </div>
+            <div>
+              <span style="font-size: 14px;">碳權NFT數量 : <strong id="CarbonNFTBalanceOf">Loading...</strong>(GiM-CNFT)</span>
+            </div>
+          </div>
+        </div>
+        <div class="menu-space"></div>
+        <div data-role="wallet" class="wallet-container" style="display: flex; align-items: center;">
+          <div data-role="wallet-item" class="wallet">
+            <button type="button" class="btn btn-outline-dark" id="wallet-button" onclick="WalletApp.Connect();">
+              <span id="wallet-name">
+                <strong>連接錢包</strong>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="retire_Company">
+      <span class="CompanyInfo-item" style="font-size: 14px;"><strong id="Company_Info" style="font-size: 20px;">您所註冊的公司</strong></span>
+      <span class="CompanyInfo-item" style="font-size: 14px;margin-right: 10px;">公司編號 : <strong id="Company_Id">Loading...</strong></span>
+      <span class="CompanyInfo-item" style="font-size: 14px;margin-right: 10px;">公司名稱 : <strong id="Company_Name">Loading...</strong></span>
+      <span class="CompanyInfo-item" style="font-size: 14px;margin-right: 10px;">碳權申請量 : <strong id="Company_CarbonUsed">Loading...</strong></span>
+      <span class="CompanyInfo-item" style="font-size: 14px;margin-right: 10px;">碳排抵消量 : <strong id="Company_Retired">Loading...</strong></span>
+    </div>
+    <script>
+      const registrymenu = document.querySelector('.registry');
+      const transfermenu = document.querySelector('.transfer');
+      const retiremenu = document.querySelector('.retire');
+      const tracemenu = document.querySelector('.trace');
+      //const companymenu = document.querySelector('.company');
+      const registry  = document.querySelector('.registry-submenu');
+      const transfer  = document.querySelector('.transfer-submenu');
+      const retire  = document.querySelector('.retire-submenu');
+      const trace  = document.querySelector('.trace-submenu');
+      //const company  = document.querySelector('.company-submenu');
+      const registryname  = document.querySelector('.registry-name');
+      const transfername  = document.querySelector('.transfer-name');
+      const retirename  = document.querySelector('.retire-name');
+      const tracename  = document.querySelector('.trace-name');
+      //const companyname  = document.querySelector('.company-name');
+
+      registrymenu.addEventListener('mouseenter', () => {
+        registry.style.display = 'block';
+        registryname.style.color = 'blue';
+      });
+      registrymenu.addEventListener('mouseleave', () => {
+        registry.style.display = 'none';
+        registryname.style.color = 'black';
+      });
+      registry.addEventListener('mouseenter', () => {
+        registry.style.display = 'block';
+        registryname.style.color = 'blue';
+      });   
+      registry.addEventListener('mouseleave', () => {
+        registry.style.display = 'none';
+        registryname.style.color = 'black';
+      });
+
+      transfermenu.addEventListener('mouseenter', () => {
+        transfer.style.display = 'block';
+        transfername.style.color = 'blue';
+      });
+      transfermenu.addEventListener('mouseleave', () => {
+        transfer.style.display = 'none';
+        transfername.style.color = 'black';
+      });
+      transfer.addEventListener('mouseenter', () => {
+        transfer.style.display = 'block';
+        transfername.style.color = 'blue';
+      });    
+      transfer.addEventListener('mouseleave', () => {
+        transfer.style.display = 'none';
+        transfername.style.color = 'black';
+      });
+
+      retiremenu.addEventListener('mouseenter', () => {
+        retire.style.display = 'block';
+        retirename.style.color = 'blue';
+      });
+      retiremenu.addEventListener('mouseleave', () => {
+        retire.style.display = 'none';
+        retirename.style.color = 'black';
+      });
+      retire.addEventListener('mouseenter', () => {
+        retire.style.display = 'block';
+        retirename.style.color = 'blue';
+      });    
+      retire.addEventListener('mouseleave', () => {
+        retire.style.display = 'none';
+        retirename.style.color = 'black';
+      });
+
+      tracemenu.addEventListener('mouseenter', () => {
+        trace.style.display = 'block';
+        tracename.style.color = 'blue';
+      });
+      tracemenu.addEventListener('mouseleave', () => {
+        trace.style.display = 'none';
+        tracename.style.color = 'black';
+      });
+      trace.addEventListener('mouseenter', () => {
+        trace.style.display = 'block';
+        tracename.style.color = 'blue';
+      });    
+      trace.addEventListener('mouseleave', () => {
+        trace.style.display = 'none';
+        tracename.style.color = 'black';
+      });
+      /*companymenu.addEventListener('mouseenter', () => {
+        company.style.display = 'block';
+        companyname.style.color = 'blue';
+      });
+      companymenu.addEventListener('mouseleave', () => {
+        company.style.display = 'none';
+        companyname.style.color = 'black';
+      });
+      company.addEventListener('mouseenter', () => {
+        company.style.display = 'block';
+        companyname.style.color = 'blue';
+      });    
+      company.addEventListener('mouseleave', () => {
+        company.style.display = 'none';
+        companyname.style.color = 'black';
+      });*/
+    </script>
+    <script>
+    async function reloading_walletInfo(){
+      await $.ajax({
+            type: "GET",
+            url: "/connectCheck",
+            data: {
+            },               
+            success: function (data) {
+                catch_walletInfo(data);
+            },
+            error: function (err) {
+            }            
+        });
+      function catch_walletInfo(data){
+        if(data[1]==true){
+          const walletname = document.getElementById('wallet-name');
+          walletname.innerHTML = data[0][0]+data[0][1]+data[0][2]+data[0][3]+data[0][4]+data[0][5]+'...';
+          WalletApp.BalanceOf();
+        }
+        else{
+          document.getElementById("CarbonTokenBalanceOf").innerHTML='disconnect';
+          document.getElementById("CarbonNFTBalanceOf").innerHTML='disconnect';
+        }
+      }
+    }
+    async function reloading_retireInfo(){
+      await $.ajax({
+                  type: "GET",
+                  url: "/userInfo/getYourCompanyRetirementInfo",
+                  data: {
+                  },               
+                  success: function (data) {
+                    catch_retireInfo(data);
+                  },
+                  error: function (err) {
+                  }            
+              });
+            function catch_retireInfo(data){
+              if(String(data)=="noWallet"){
+                document.getElementById("Company_Id").innerHTML='disconnect';
+                document.getElementById("Company_Name").innerHTML='disconnect';
+                document.getElementById("Company_CarbonUsed").innerHTML='disconnect';
+                document.getElementById("Company_Retired").innerHTML='disconnect';
+              }
+              else{
+              if(data[0]!=''){document.getElementById("Company_Id").innerHTML=data[0];}
+              else{document.getElementById("Company_Id").innerHTML='no registry';}
+              if(data[1]!=''){document.getElementById("Company_Name").innerHTML=data[1];}
+              else{document.getElementById("Company_Name").innerHTML='no registry';}
+              if(data[2]!=''){document.getElementById("Company_CarbonUsed").innerHTML=data[2];}
+              else{document.getElementById("Company_CarbonUsed").innerHTML='0';}
+              if(data[3]!=''){document.getElementById("Company_Retired").innerHTML=data[3];}
+              else{document.getElementById("Company_Retired").innerHTML='0';}
+              }
+            }
+    }
+    async function reloading_membership(){
+      await $.ajax({
+                  type: "GET",
+                  url: "/userInfo/membership",
+                  data: {
+                  },               
+                  success: function (data) {
+                    catch_membership(data);
+                  },
+                  error: function (err) {
+                  }            
+              });
+            function catch_membership(data){
+              if(String(data)=="noWallet"){
+                document.getElementById("NFTMembership").innerHTML='disconnect';
+                document.getElementById("RetirementMembership").innerHTML='disconnect';
+              }
+              else{
+                switch(data[0][0]){
+                  case '':
+                  document.getElementById("NFTMembership").innerHTML=`waiting for registry...`;
+                  switch(data[1][0]){
+                    case '':
+                    document.getElementById("RetirementMembership").innerHTML=`waiting for registry...`;
+                    break;
+                    default:
+                    document.getElementById("RetirementMembership").innerHTML=`(ID: ${data[1][0]} / Name: ${data[1][1]})`;
+                    break;
+                  }
+                  break;
+                  default:
+                  document.getElementById("NFTMembership").innerHTML=`(ID: ${data[0][0]} / Name: ${data[0][1]})`;
+                  switch(data[1][0]){
+                    case '':
+                    document.getElementById("RetirementMembership").innerHTML=`waiting for registry...`;
+                    break;
+                    default:
+                    document.getElementById("RetirementMembership").innerHTML=`(ID: ${data[1][0]} / Name: ${data[1][1]})`;
+                    break;
+                  }
+                  break;
+                }
+              }
+            }
+    }
+    window.onload=reloading();
+        function reloading(){
+          WalletApp.Connect();
+          reloading_walletInfo();
+        }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "myapp",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "@ethereumjs/common": "^4.3.0",
+    "@hyperledger/fabric-gateway": "^1.2.2",
+    "asn1": "^0.2.6",
+    "asn1.js": "^5.4.1",
+    "axios": "^1.6.8",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "ethers": "^5.7.2",
+    "express": "~4.16.1",
+    "express-session": "^1.17.3",
+    "fabric-ca-client": "^2.2.4",
+    "fabric-contract-api": "^2.5.2",
+    "fabric-network": "^2.2.16",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "sqlite": "5.1.1",
+    "web3": "^1.10.0"
+  }
+}
